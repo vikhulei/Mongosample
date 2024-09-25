@@ -6,7 +6,7 @@ const { check, validationResult } = require('express-validator')
 
 const User = require('../../models/User')
 
-router.get('/', (req, res) => res.send('Auth route'))
+router.get('/', (req, res) => res.send('Users route'))
 
 router.post('/', [
     check('name', 'Name is required')
