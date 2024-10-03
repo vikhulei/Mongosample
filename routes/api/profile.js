@@ -88,7 +88,7 @@ router.post('/', [auth, [
                 { user: req.user.id },
                 { $set: profileFields },
                 { new: true })
-                return res.json (profile)
+            return res.json(profile)
         }
         //create
         profile = new Profile(profileFields)
@@ -111,7 +111,7 @@ router.get('/', async (req, res) => {
 
     try {
         const profiles = await Profile.find().populate('user', ['name', 'avatar'])
-            res.json(profiles)
+        res.json(profiles)
     } catch (err) {
         console.error(err.message)
         res.status(500).send('Server error')
@@ -126,15 +126,15 @@ router.get('/', async (req, res) => {
 router.get('/user/:user_id', async (req, res) => {
 
     try {
-        const profile = await Profile.findOne( { user: req.params.user_id }).populate('user', ['name', 'avatar'])
-        if(!profile) {
-            return res.status(400).json({msg: 'Profile does not exist'})
+        const profile = await Profile.findOne({ user: req.params.user_id }).populate('user', ['name', 'avatar'])
+        if (!profile) {
+            return res.status(400).json({ msg: 'Profile does not exist' })
         }
-            res.json(profile)
+        res.json(profile)
     } catch (err) {
         console.error(err.message)
-        if(err.kind == 'ObjectId') {
-           return res.status(400).json({msg: 'Profile does not exist'})
+        if (err.kind == 'ObjectId') {
+            return res.status(400).json({ msg: 'Profile does not exist' })
         }
         res.status(500).send('Server error')
     }
@@ -150,14 +150,14 @@ router.delete('/', auth, async (req, res) => {
 
     try {
         // remove profile
-        await Profile.findOneAndDelete({ user_id: req.user_id})
+        await Profile.findOneAndDelete({ user_id: req.user_id })
         //remove user
-        await User.findOneAndDelete({ _id: req.user.id})
-        res.json({msg: 'User deleted'})
+        await User.findOneAndDelete({ _id: req.user.id })
+        res.json({ msg: 'User deleted' })
     } catch (err) {
         console.error(err.message)
-        if(err.kind == 'ObjectId') {
-           return res.status(400).json({msg: 'Profile does not exist'})
+        if (err.kind == 'ObjectId') {
+            return res.status(400).json({ msg: 'Profile does not exist' })
         }
         res.status(500).send('Server error')
     }
@@ -172,22 +172,22 @@ router.delete('/', auth, async (req, res) => {
 
 router.put('/experience', [auth, [
     check('title', 'Title is required')
-    .not()
-    .isEmpty(),
+        .not()
+        .isEmpty(),
     check('company', 'Company is required')
-    .not()
-    .isEmpty(),
+        .not()
+        .isEmpty(),
     check('from', 'From date is required')
-    .not()
-    .isEmpty(),
+        .not()
+        .isEmpty(),
 
 ]], async (req, res) => {
     const errors = validationResult(req)
-    if(!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array()})
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
     }
 
-    const { 
+    const {
         title,
         company,
         location,
@@ -213,11 +213,26 @@ router.put('/experience', [auth, [
 
         await profile.save()
         res.json(profile)
-    } catch(err) {
+    } catch (err) {
         console.error(err.message)
         res.status(500).send('Server Error')
     }
 })
 
+
+//@route DELETE api/profile/experience/:exp_id
+//@desc Delete experience from profile
+//@access Private
+
+routeer.delete('/experience/:exp_id', auth, async (req, res) => {
+    try {
+        const profile = await Profile.findOne({ user: req.user.id })
+        //get  remove index
+
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server Error')
+    }
+})
 
 module.exports = router
