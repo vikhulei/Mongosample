@@ -15,7 +15,7 @@ router.get('/me', auth, async (req, res) => {
         const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'avatar'])
 
         if (!profile) {
-            res.status(400).json({ msg: 'There is no profile for this user' })
+            return res.status(400).json({ msg: 'There is no profile for this user' })
         }
 
         res.json(profile)
@@ -84,7 +84,7 @@ router.post('/', [auth, [
         let profile = await Profile.findOne({ user: req.user.id })
         if (profile) {
             // update
-            profile = await profile.findOneAndUpdate(
+            profile = await Profile.findOneAndUpdate(
                 { user: req.user.id },
                 { $set: profileFields },
                 { new: true })
@@ -101,5 +101,68 @@ router.post('/', [auth, [
         res.status(500).send('Server Error')
     }
 })
+
+
+//@route GTET api/profile
+//@desc Get all profiles
+//@access Public
+
+router.get('/', async (req, res) => {
+
+    try {
+        const profiles = await Profile.find().populate('user', ['name', 'avatar'])
+            res.json(profiles)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server error')
+    }
+
+})
+
+//@route GET api/profile/user/:user_id
+//@desc Get profile by user id
+//@access Public
+
+router.get('/user/:user_id', async (req, res) => {
+
+    try {
+        const profile = await Profile.findOne( { user: req.params.user_id }).populate('user', ['name', 'avatar'])
+        if(!profile) {
+            return res.status(400).json({msg: 'Profile does not exist'})
+        }
+            res.json(profile)
+    } catch (err) {
+        console.error(err.message)
+        if(err.kind == 'ObjectId') {
+           return res.status(400).json({msg: 'Profile does not exist'})
+        }
+        res.status(500).send('Server error')
+    }
+
+})
+
+
+//@route DELETE api/profile
+//@desc Delete profile, user, post
+//@access Private
+
+router.delete('/', auth, async (req, res) => {
+
+    try {
+        // remove profile
+        await Profile.findOneAndDelete({ user_id: req.user_id})
+        //remove user
+        await User.findOneAndDelete({ _id: req.user.id})
+        res.json({msg: 'User deleted'})
+    } catch (err) {
+        console.error(err.message)
+        if(err.kind == 'ObjectId') {
+           return res.status(400).json({msg: 'Profile does not exist'})
+        }
+        res.status(500).send('Server error')
+    }
+
+})
+
 
 module.exports = router
