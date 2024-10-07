@@ -103,7 +103,7 @@ router.post('/', [auth, [
 })
 
 
-//@route GTET api/profile
+//@route GET api/profile
 //@desc Get all profiles
 //@access Public
 
