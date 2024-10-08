@@ -73,6 +73,7 @@ router.post('/', [
 
 
         // res.send('User registered')
+        // console.log('hi')
 
 
 
