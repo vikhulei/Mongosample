@@ -1,25 +1,16 @@
 const express = require('express')
-const connectDB = require('./config/db')
+const app = express()
+const mongoose = require('mongoose')
+const port = process.env.PORT || 8000
 
-const cors = require('cors')
+app.listen(port, () => console.log('server'))
 
-
-const app = express ()
-
-app.use(cors())
-
-connectDB()
-
-//Initialize middleWare
-app.use(express.json({ extended: false}))
-
-const PORT = process.env.PORT || 5000
-
-app.get('/', (req, res) => res.send('API running'))
-
-app.use('/api/auth', require('./routes/api/auth'))
-app.use('/api/users', require('./routes/api/users'))
-app.use('/api/profile', require('./routes/api/profile'))
-app.use('/api/post', require('./routes/api/post'))
-
-app.listen(PORT, () => console.log(`server started on ${PORT}`))
+const mongoDBURL = 'mongodb+srv://vikhulei:A45bmc7@devconnector.rxhfh.mongodb.net/viktor?retryWrites=true&w=majority&appName=DevConnector';
+ 
+//connect to Database
+mongoose.connect(mongoDBURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => { console.log("Connection Successfull") })
+    .catch((err) => { console.log("Received an Error") })
